@@ -1,12 +1,21 @@
 use view::get_input_command ;
+use data::establish_connection;
 
 mod view;
 mod controller;
-mod model;
+mod schema;
 mod service;
 mod data;
 
 fn main() {
-    get_input_command();
-    println!("Hello, world!");
+
+    // let runtime = tokio::runtime::Runtime::new().unwrap();
+
+    // runtime.block_on(async {
+    //     let _ = init_data().await;
+    //     get_input_command();
+    //     println!("Hello, world!");
+    // });
+        get_input_command();
+        println!("Hello, world!");
 }
