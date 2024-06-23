@@ -7,5 +7,13 @@ with_docs = true
 filter = { only_tables = ["status"] }
 custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
 
+
+[print_schema.task]
+file = "src/schema/task.rs"
+with_docs = true
+filter = { only_tables = ["task"] }
+custom_type_derives = ["diesel::query_builder::QueryId", "Clone"]
+
+
 [migrations_directory]
 dir = "/home/thimotee/work/rust_work/todo/migrations"

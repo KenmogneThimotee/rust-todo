@@ -6,6 +6,7 @@ use dotenvy::dotenv;
 use std::env;
 
 pub(crate) mod status;
+pub(crate) mod task;
 
 pub fn establish_connection() -> SqliteConnection {
     dotenv().ok();

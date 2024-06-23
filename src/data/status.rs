@@ -1,5 +1,5 @@
 use super::super::schema::{Status, CreateStatus};
-use crate::data::establish_connection;
+use crate::data::{self, establish_connection};
 use diesel::result::Error ;
 use diesel::prelude::*;
 
@@ -30,25 +30,74 @@ pub fn update_status(status_id: i32, status_name: String, status_color: String) 
     Ok(returned_status)
 }
 
-pub fn get_status_by_name(status_name: String) -> Result<Option<Status>, Error> {
+pub fn get_status_by_name(status_name: String) -> Result<Status, Error> {
     use crate::schema::status::status::dsl::* ; 
 
     let connection = &mut establish_connection();
-    let results = status
+    let result = status
         .filter(name.eq(&status_name))
         .limit(1)
         .select(Status::as_select())
-        .load(connection)?;
+        .first(connection)?;
 
     
-    if results.len() == 1 {
-        let returned_status = Status{
-            id: results[0].id,
-            name: results[0].name.clone(),
-            color: results[0].color.clone()
-        };
-        Ok(Some(returned_status))
-    }else{
-        Ok(None)
+
+    Ok(result)
+
+}
+
+pub fn get_status_by_id(status_id: i32) -> Result<Status, Error> {
+    use crate::schema::status::status::dsl::* ; 
+
+    let connection = &mut establish_connection();
+    let result = status
+        .find(&status_id)
+        .select(Status::as_select())
+        .first(connection)?;
+
+    Ok(result)
+}
+
+pub fn get_status(order_by: String, status_name: String) -> Result<Vec<Status>, Error> {
+    use crate::schema::status::status::dsl::* ; 
+
+    let connection = &mut establish_connection();
+
+    let pattern = format!("%{}%", status_name);
+    let results: Vec<Status>;
+    if order_by == "asc" {
+        results = status
+        .filter(name.like(pattern))
+        .select(Status::as_select())
+        .order_by(name.asc())
+        .load(connection)?;
+    
+    }else {
+        results = status
+        .filter(name.like(pattern))
+        .select(Status::as_select())
+        .order_by(name.desc())
+        .load(connection)?;
+    
     }
+
+    Ok(results)
+
+}
+
+pub fn delete_status(status_id: i32, cascade: bool) -> Result<usize, Error> {
+    use crate::schema::status::status::dsl::* ; 
+
+
+    let connection = &mut establish_connection();
+
+    if cascade {
+        let tasks = data::task::get_task_by_status(status_id)?;
+        for task in tasks {
+            data::task::delete_task(task.id)?;
+        }
+    }
+    diesel::delete(status.find(status_id))
+        .execute(connection)
+
 }
