@@ -13,7 +13,7 @@ cargo-binstall = "1.7.2"
 binstall = "0.2.0"
 diesel = { version = "2.2.0", features = ["sqlite", "returning_clauses_for_sqlite_3_35"] }
 dotenvy = "0.15.7"
-
+diesel_migrations = "2.2.0"
 [dependencies.sea-orm-migration]
 version = "0.12"
 features = [
